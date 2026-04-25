@@ -16,33 +16,33 @@ A professional, production-ready full-stack web application that analyzes public
 
 ---
 
-## 🧱 Architecture
+## 🧱 System Architecture
 
-```
-ai-repo-analyzer/
-├── backend/                  # FastAPI (Python 3.11)
-│   ├── app/
-│   │   ├── main.py           # Entry point + Rate Limiting Middleware
-│   │   ├── analyzers/
-│   │   │   ├── pylint/flake8 # Python Quality
-│   │   │   ├── bandit        # Python Security
-│   │   │   └── secrets_analyzer.py # Multi-language Secret Detection 🆕
-│   │   ├── services/
-│   │   │   ├── ai_service.py    # OpenAI GPT-4o Integration
-│   │   │   └── scan_service.py  # Async Orchestration
-│   └── Dockerfile
-├── frontend/                 # Next.js 15 (App Router)
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── dashboard/    # Analytics + Trends 🆕
-│   │   │   └── scan/[id]/    # Results + PDF Export 🆕
-│   │   └── components/
-│   │       ├── ToastProvider.tsx # Global Notifications 🆕
-│   │       └── KeyboardShortcutsModal.tsx 🆕
-│   └── Dockerfile
-├── .github/workflows/        # CI Pipeline (GitHub Actions) 🆕
-├── docker-compose.yml        # Multi-container setup (Postgres + Redis)
-└── README.md
+```mermaid
+graph TD
+    User([User]) <--> Frontend[Next.js Frontend]
+    
+    subgraph "Next.js Gateway"
+        Frontend --> APIProxy[API Proxy Routes]
+        APIProxy --> Auth[NextAuth.js]
+    end
+
+    APIProxy <--> Backend[FastAPI Backend]
+
+    subgraph "Analysis Engine"
+        Backend --> DB[(PostgreSQL)]
+        Backend --> Redis[(Redis Queue)]
+        Redis <--> Worker[RQ Worker]
+        Worker --> Clone[Git Clone]
+        Worker --> Static[Static Analyzers]
+        Static --> Secrets[Secrets Detector]
+        Static --> Pylint[Pylint/Flake8]
+        Static --> Bandit[Bandit Security]
+        Worker --> AI[OpenAI GPT-4o]
+    end
+    
+    Clone --> Files[Local Filesystem]
+    Static --> Files
 ```
 
 ---
